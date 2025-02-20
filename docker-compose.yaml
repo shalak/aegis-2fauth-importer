@@ -1,0 +1,33 @@
+services:
+  # server mode, example usage:
+  # curl -X POST http://localhost:5000/upload \
+  #    -F "file=@path/to/encrypted/backup.json" \
+  #    -F "url=$URL_2FAUTH" \
+  #    -F "token=$BEARER_2FAUTH" \
+  #    -F "password=$AEGIS_PASS" \
+  #    -H "Content-Type: multipart/form-data"
+  aegis-2fauth-importer-server:
+    build: .
+    # env is optional, if set they don't need to be provided in REST calls
+    environment:
+      # password set in Aegis app
+      - AEGIS_PASS=AEGIS_PASSWORD
+      # URL to 2FAuth instance
+      - URL_2FAUTH=URL_TO_YOUR_2FAUTH_INSTANCE
+      # See https://docs.2fauth.app/api/#creating-an-access-token
+      - BEARER_2FAUTH=PERSONAL_ACCESS_TOKEN_FOR_2FAUTH
+    ports:
+      - "5000:5000"
+    command: ["python", "aegis-2fauth-importer.py", "--serve"]
+  # CLI mode, example usage:
+  # 1. sync your backup file as ./vaults/aegis-backup.json
+  # 2. Run this, e.g. in cron:
+  # docker-compose run --rm aegis-2fauth-importer
+  aegis-2fauth-importer:
+    build: .
+    env_file:
+      # AEGIS_PASS, URL_2FAUTH, BEARER_2FAUTH required
+      - aegis.env
+    volumes:
+      - ./vaults:/vaults
+    command: ["python", "aegis-2fauth-importer.py", "--input", "/vaults/aegis-backup.json"]

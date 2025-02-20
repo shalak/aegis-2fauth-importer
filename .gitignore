@@ -1,0 +1,18 @@
+dist/
+__pycache__
+.pytest_cache/
+.vscode/
+.idea/
+
+.DS_Store
+
+# virtual envs
+venv/
+.venv/
+
+# file and folder generated
+export/
+old_files/
+test.sh
+vaults
+aegis.env
